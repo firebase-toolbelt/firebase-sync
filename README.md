@@ -11,11 +11,11 @@ This is extremelly flexible and has been used for more than one year in producti
 
 [Setup with Immutable.js](#setup-with-immutablejs)
 
-[Getting Started](#getting-started)
+[Your first synced component](#your-first-synced-component)
+
+[Modifying the stored objects](#modifying-the-stored-objects)
 
 [Working with lists](#working-with-lists)
-
-[Best practices](#working-with-lists)
 
 ## Setup
 
@@ -91,7 +91,9 @@ export { FirebaseSync, firebaseListSelector };
 ##  Your first synced component
 
 We will build a simple user profile component that syncs the user object from your firebase database.
-There are two things that you should notice: we're using the absence of the user object on our state to show our loading state and our database object key is automatically saved on a special `_key` prop. We provide a *lot* more of this utilities.
+There are two things that you should notice:
+- we're using the absence of the user object on our state to show our loading state.
+- our database object key is automatically saved on a special `_key` prop. We provide a *lot* more of this utilities.
 
 ```javascript
 import React from 'react'
@@ -120,11 +122,61 @@ export default connect((state, props) => ({
 }))(User)
 ```
 
+## Modifying the stored objects
+
+Sometimes we want to alter the object we're gonna use inside our components.
+It's really simple to do it with firebase-sync as we can process each object before they are saved on our state.
+You should also notice how we create a component that encapsulates our FirebaseSync object, this enables a lot of composition possibilities and is considered a good practice.
+
+```javascript
+// ./containers/FirebaseSyncUser.js
+
+import React from 'react'
+import { FirebaseSync } from '../lib/FirebaseSync'
+
+function processUser(user) {
+  return {
+    ...user,
+    displayName: `${user.firstName} ${user.lastName}`
+  };
+}
+
+const FirebaseSyncUser = ({ userId }) => (
+  <FirebaseSync
+    path=`users/${userId}`
+    onProcessItem={processUser} />
+)
+
+export default FirebaseSyncUser
+```
+
+```javascript
+// ./containers/User.js
+
+import React from 'react';
+import FirebaseSyncUser from '../FirebaseSyncUser'
+
+const User = (props) => (
+  <div>
+  
+    <FirebaseSyncUser userId={props.userId} />
+    
+    {(props.user) && (
+      <div>
+        <h1>{user.displayName}</h1>
+      </div>
+    )}
+  
+  </div>
+)
+
+export default connect(
+  (state, props) => ({
+    user: get(state, ['user', props.userId])
+  })
+)(User)
+```
+
 ##  Working with lists
-
-[in progress]
-
-
-##  Best practices
 
 [in progress]
