@@ -5,8 +5,6 @@ This is extremelly flexible and has been used for more than one year in producti
 
 ## Table of Contents
 
-[Demo](https://codesandbox.io/s/jRrPXxKYy)
-
 [Setup](#setup)
 
 [Setup with Immutable.js](#setup-with-immutablejs)
