@@ -22,13 +22,13 @@ function parseItem(snap, props) {
   return item;
 }
 
-function onSnap(snap, props, innerState, appendKeyToPath) {
+function onSnap(snap, props, innerState, appendKeyToPath, forceRemove) {
 
   /**
    * Parse item.
    */
     
-  const item = parseItem(snap, props);
+  const item = !forceRemove ? parseItem(snap, props) : null;
 
   /**
    * Parse update path.
@@ -171,7 +171,7 @@ function syncList(props) {
       ...props,
       onSnapAdded: (snap) => onSnap(snap, props, innerState, true),
       onSnapChanged: (snap) => onSnap(snap, props, innerState, true),
-      onSnapRemoved: (snap) => onSnap(snap, props, innerState, true)
+      onSnapRemoved: (snap) => onSnap(snap, props, innerState, true, true)
     })
   };
 

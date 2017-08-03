@@ -92,7 +92,6 @@ class Demo extends Component {
               fetch
               path='title'
               onLoad={() => {
-                console.log('on title load');
                 this.setState({ loadingTitle: false });
               }} />
 
@@ -117,7 +116,6 @@ class Demo extends Component {
             <FirebaseSync
               path='description'
               onLoad={() => {
-                console.log('on description load');
                 this.setState({ loadingDescription: false });
               }} />
 
@@ -143,7 +141,6 @@ class Demo extends Component {
               path='items'
               orderBy='title'
               onLoad={() => {
-                console.log('on items load');
                 this.setState({ loadingItems: false })
               }} />
 
