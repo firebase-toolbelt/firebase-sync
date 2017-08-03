@@ -25,10 +25,10 @@ First you must add the firebase-sync reducer to your app's reducers.
   import { combineReducers } from 'redux';
   import { getFirebaseSyncReducer } from 'firebase-react-redux';
   
-  combineReducers(
-    // your other reducers go here
+  combineReducers({
+    // ...your other reducers go here
     firebase: getFirebaseSyncReducer()
-  )
+  })
 ```
 
 Then you would normally setup the firebase-sync component and selector.
@@ -61,10 +61,10 @@ You must pass in a `Map` object so we can use it as the reducer's initial state.
   import { getFirebaseSyncReducer } from 'firebase-react-redux';
   import { Map } from 'immutable';
   
-  combineReducers(
-    // your other reducers go here
+  combineReducers({
+    // ...your other reducers go here
     firebase: getFirebaseSyncReducer(Map())
-  )
+  })
 ```
 
 Then you would normally setup the firebase-sync component and selector.
