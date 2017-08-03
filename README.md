@@ -88,10 +88,34 @@ const firebaseListSelector = getFirebaseListSelector(reducerName);
 export { FirebaseSync, firebaseListSelector };
 ```
 
-##  Getting Started
+##  Your first synced component
 
-[in progress]
+```javascript
+import React from 'react'
+import { connect } from 'react-redux'
+import get from 'lodash/get'
 
+const User = (props) => (
+  <div>
+  
+    <FirebaseSync path=`users/${props.userId}` />
+    
+    {(!props.user) ? (
+      <p>loading…</p>
+    ) : (
+      <p>
+        <h1>User name: {props.user.name}</h1>
+        <p>User id: {props.user._key}</h1>       // we automatically save the item key on this special prop
+      </p>
+    )}
+  
+  </div>
+)
+
+export default connect((state, props) => ({
+  user: get(state, ['users', props.userId])
+}))(User)
+```
 
 ##  Working with lists
 
