@@ -1,9 +1,7 @@
 # firebase-sync
 
-This lib focus on binding your redux state to your firebase backend.
-We do this with a component based approach so that all fetch/sync/unsync operations are done when a component of yours is mounted or unmounted. Helper functions are also provided if you need to access this operations from your code.
-
-We provide a single `FirebaseSync` component that you may use directly or by wrapping it with a predefined setup and exporting it as your own component. We recommended that you use the latter for a more scalable application.
+Bind your firebase backedn to your redux state with a dead simple component based approach.
+This is extremelly flexible and has been used for more than one year in production apps.
 
 ## Table of Contents
 
