@@ -24,8 +24,7 @@
     "prop-types": "^15.5.10",
     "react-redux": "^5.0.5",
     "redux": "^3.7.2",
-    "reselect": "^3.0.1",
-    "shallow-equal": "^1.0.0"
+    "reselect": "^3.0.1"
   },
   "peerDependencies": {
     "react": "15.x"

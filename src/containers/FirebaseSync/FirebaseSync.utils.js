@@ -1,6 +1,8 @@
-import { fbFetchItem, fbSyncItem, fbUnsyncItem, fbSyncList, fbUnsyncList } from '../../firebase/read';
+import { fbSyncItem, fbUnsyncItem, fbSyncList, fbUnsyncList } from '../../firebase/read';
 import { setItem, removeItem } from '../../redux/actions';
 import get from 'lodash/get';
+import isString from 'lodash/isString';
+import isNumber from 'lodash/isNumber';
 
 /**
  * ============================================================================
@@ -8,20 +10,25 @@ import get from 'lodash/get';
  * ============================================================================
  */
 
-function createItem(snap, props) {
-  return props.onProcessItem
-    ? props.onProcessItem(snap.exportVal())
-    : snap.exportVal();
+function parseItem(snap, props) {
+  let item = snap.exportVal();
+
+  if (item && !isString(item) && !isNumber(item)) {
+    item._key = snap.key;
+    item = props.onProcessItem ? props.onProcessItem(item) : item;
+    item = props.onPostProcessItem ? props.onPostProcessItem(item) : item;
+  }
+
+  return item;
 }
 
-function onSnap(snap, props, dispatch, innerState, appendKeyToPath) {
+function onSnap(snap, props, innerState, appendKeyToPath) {
 
   /**
    * Parse item.
    */
     
-  let item = snap.exists() ? createItem(snap, props) : snap.val();
-  if (props.onPostProcessItem) item = props.onPostProcessItem(item);
+  const item = parseItem(snap, props);
 
   /**
    * Parse update path.
@@ -34,12 +41,12 @@ function onSnap(snap, props, dispatch, innerState, appendKeyToPath) {
    * Update state.
    */
   
-  if (item === null) {
+  if (item !== null) {
     props.onValue && props.onValue(item);
-    dispatch(removeItem(path));
+    props.dispatch(setItem(path, item));
   } else {
     props.onRemove && props.onRemove(snap.key);
-    dispatch(setItem(path));
+    props.dispatch(removeItem(path));
   }
 
   /**
@@ -68,86 +75,83 @@ function getLocalPathItem(props, getState) {
  */
 
 function syncItem(props) {
-  return (dispatch, getState) => {
 
-    /**
-     * fbSyncItem returns true if the listener is already active.
-     */
+  /**
+   * fbSyncItem returns true if the listener is already active.
+   */
 
-    let innerState = {
-      loaded: fbSyncItem({
-        ...props,
-        onSnap: (snap) => onSnap(snap, props, dispatch, innerState)
-      })
-    };
-
-    /**
-     * If already active, trigger onLoad event.
-     */
-
-    if (innerState.loaded) {
-      props.onLoad && props.onLoad();
-    }
-
+  let innerState = {
+    loaded: fbSyncItem({
+      ...props,
+      onSnap: (snap) => onSnap(snap, props, innerState)
+    })
   };
+
+  /**
+   * If already active, trigger onLoad event.
+   */
+
+  if (innerState.loaded) {
+    props.onLoad && props.onLoad();
+  }
+
 }
 
 function unsyncItem(props) {
   return () => fbUnsyncItem(props);
 }
 
-function fetchItem(props) {
-  return (dispatch, getState) => {
+function fetchItem(props, getState) {
+
+  /**
+   * Soft fetch only reaches server if no local item is found.
+   */
+
+  if (props.fetch === 'soft') {
 
     /**
-     * Soft fetch only reaches server if no local item is found.
+     * We will try to fetch local item on both mutable and immutable states.
      */
+    
+    const localItem = getLocalPathItem(props, getState);
 
-    if (props.fetch === 'soft') {
-
-      /**
-       * We will try to fetch local item on both mutable and immutable states.
-       */
-      
-      const localItem = getLocalPathItem(props, getState);
-
-      if (localItem) {
-        props.onLoad && props.onLoad();
-        return Promise.resolve(localItem);
-      }
-
+    if (localItem) {
+      props.onLoad && props.onLoad();
+      return Promise.resolve(localItem);
     }
 
-    /**
-     * If fetch is not set as soft,
-     * or if no local item was found,
-     * reach server and fetch item.
-     * 
-     * For increased cached perfomance,
-     * we will actually listen to the object path for a few seconds,
-     * by doing it this way we will ensure multiple fetches on the same
-     * location only triggers a single request.
-     * And if an active listener is already active,
-     * we will never even have to open an additional connection.
-     */
+  }
 
-    return new Promise((resolve, reject) => {
+  /**
+   * If fetch is not set as soft,
+   * or if no local item was found,
+   * reach server and fetch item.
+   * 
+   * For increased cached perfomance,
+   * we will actually listen to the object path for a few seconds,
+   * by doing it this way we will ensure multiple fetches on the same
+   * location only triggers a single request.
+   * And if an active listener is already active,
+   * we will never even have to open an additional connection.
+   */
 
-      let firstRead = true;
+  return new Promise((resolve, reject) => {
 
-      syncItem({
-        ...props,
-        onLoad: () => {
-          if (firstRead) {
-            firstRead = false;
-            resolve(getLocalPathItem(props, getState));
-            setTimeout(() => fbUnsyncItem(fetchProps), 10 * 1000);
-          }
+    let firstRead = true;
+
+    syncItem({
+      ...props,
+      onLoad: () => {
+        if (firstRead) {
+          firstRead = false;
+          props.onLoad && props.onLoad();
+          resolve(getLocalPathItem(props, getState));
+          setTimeout(() => fbUnsyncItem(props), 10 * 1000);
         }
-      });
-
+      }
     });
-  };
+
+  });
 }
  
 /**
@@ -157,44 +161,42 @@ function fetchItem(props) {
  */
 
 function syncList(props) {
-  return (dispatch, getState) => {
 
-    /**
-     * fbSyncList returns true if the listener is already active.
-     */
+  /**
+   * fbSyncList returns true if the listener is already active.
+   */
 
-    let innerState = {
-      loaded: fbSyncList({
-        ...props,
-        onSnapAdded: (snap) => onSnap(snap, props, dispatch, innerState, true),
-        onSnapChanged: (snap) => onSnap(snap, props, dispatch, innerState, true),
-        onSnapRemoved: (snap) => onSnap(snap, props, dispatch, innerState, true)
-      })
-    };
-
-    /**
-     * If already active, trigger onLoad event.
-     */
-
-    if (innerState.loaded) {
-      props.onLoad && props.onLoad();
-      return;
-    }
-
-    /**
-     * If not trigger the onLoad callback manually after a big timeout.
-     * This is necessary because list events does not automatically trigger on empty lists,
-     * 
-     */
-
-    setTimeout(() => {
-      if (!innerState.loaded) {
-        props.onLoad && props.onLoad();
-        innerState.loaded = true;
-      }
-    }, 2000);
-
+  let innerState = {
+    loaded: fbSyncList({
+      ...props,
+      onSnapAdded: (snap) => onSnap(snap, props, innerState, true),
+      onSnapChanged: (snap) => onSnap(snap, props, innerState, true),
+      onSnapRemoved: (snap) => onSnap(snap, props, innerState, true)
+    })
   };
+
+  /**
+   * If already active, trigger onLoad event.
+   */
+
+  if (innerState.loaded) {
+    props.onLoad && props.onLoad();
+    return;
+  }
+
+  /**
+   * If not trigger the onLoad callback manually after a big timeout.
+   * This is necessary because list events does not automatically trigger on empty lists,
+   * 
+   */
+
+  setTimeout(() => {
+    if (!innerState.loaded) {
+      props.onLoad && props.onLoad();
+      innerState.loaded = true;
+    }
+  }, 2000);
+  
 }
 
 function unsyncList(props) {

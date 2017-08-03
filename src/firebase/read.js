@@ -1,11 +1,11 @@
-import update from 'lodash';
+import update from 'lodash/update';
 
  /**
   * Cache
   * id: { count: 0, off: fn }
   */
 
-const cache = {};
+let cache = {};
 
 function getCacheId(props) {
 
@@ -22,13 +22,15 @@ function getCacheId(props) {
 
 }
 
-function cacheAdd(cacheId, fn) {
+function cacheAdd(props, fn) {
+  const cacheId = getCacheId(props);
   update(cache, [cacheId, 'count'], (x) => x ? x + 1 : 1);
   if (cache[cacheId].count === 1) cache[cacheId].off = fn();
   return cache[cacheId].count > 1;
 }
 
-function cacheRemove(cachePath, fn) {
+function cacheRemove(props, fn) {
+  const cacheId = getCacheId(props);
   update(cache, [cacheId, 'count'], (x) => x ? x - 1 : 0);
   if (!cache[cacheId].count && !!cache[cacheId].off) fn(cache[cacheId].off);
 }
@@ -96,26 +98,5 @@ export function fbUnsyncList(props) {
     ref.off('child_added', off.added, props.onError);
     ref.off('child_changed', off.changed, props.onError);
     ref.off('child_removed', off.removed, props.onError);
-  });
-}
-
-export function fbFetchItem(props) {
-  return new Promise((resolve, reject) => {
-    
-    let firstRead = true;
-
-    const fetchProps = {
-      ...props,
-      onSnap: (snap) => {
-        if (firstRead) {
-          firstRead = false;
-          resolve(snap);
-          setTimeout(() => fbUnsyncItem(fetchProps), 10 * 1000);
-        }
-      }
-    };
-
-    fbSyncItem(fetchProps, reject);
-
   });
 }

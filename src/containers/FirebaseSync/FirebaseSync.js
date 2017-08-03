@@ -3,7 +3,6 @@ import { Component } from 'react';
 // redux
 import { connect } from 'react-redux';
 // utils
-import shallowEqual from 'shallow-equal/objects';
 import debounce from 'lodash/debounce';
 import getFirebaseRef from '../../firebase/getFirebaseRef';
 // etc
@@ -16,7 +15,7 @@ import {
   unsyncList
  } from './FirebaseSync.utils';
 
-const getFirebaseSync = (firebase) => {
+const getFirebaseSync = (firebase, store) => {
   return (defaultProps = {}) => {
 
     const _ref = getFirebaseRef(firebase);
@@ -41,20 +40,39 @@ const getFirebaseSync = (firebase) => {
       _setup = debounce((nextProps) => {
         
         // prevent no-op setup
-        if (shallowEqual(this.lastProps, nextProps)) return;
+        if (
+          this.lastProps &&
+          this.lastProps.path === nextProps.path &&
+          this.lastProps.localPath === nextProps.localPath &&
+          this.lastProps.fetch === nextProps.fetch &&
+          this.lastProps.orderBy === nextProps.orderBy &&
+          this.lastProps.ref === nextProps.ref &&
+          this.lastProps.cacheId === nextProps.cacheId &&
+          this.lastProps.startAt === nextProps.startAt &&
+          this.lastProps.endAt === nextProps.endAt &&
+          this.lastProps.equalTo === nextProps.equalTo &&
+          this.lastProps.limitToFirst === nextProps.limitToFirst &&
+          this.lastProps.limitToLast === nextProps.limitToLast
+        ) return;
 
         // bind new props
         if (nextProps) {
           if (nextProps.orderBy) {
-            (nextProps.fetch) ? fetchList(nextProps) : syncList(nextProps);
+            (nextProps.fetch)
+              ? fetchList(nextProps)
+              : syncList(nextProps);
           } else {
-            (nextProps.fetch) ? fetchItem(nextProps) : syncItem(nextProps);
+            (nextProps.fetch)
+              ? fetchItem(nextProps, store.getState)
+              : syncItem(nextProps);
           }
         }
 
         // unbind last props
         if (this.lastProps && !this.lastProps.fetch) {
-          (lastProps.orderBy) ? unsyncList(lastProps) : unsyncItem(lastProps);
+          (this.lastProps.orderBy)
+            ? unsyncList(this.lastProps)
+            : unsyncItem(this.lastProps);
         }
 
         // save last props
@@ -67,7 +85,7 @@ const getFirebaseSync = (firebase) => {
        */
 
       fetchItem = (props) => (
-        fetchItem({ ...FirebaseSync.defaultProps, ...props })
+        fetchItem({ ...FirebaseSync.defaultProps, ...props }, store.getState)
       )
       syncItem = (props) => {
         syncItem({ ...FirebaseSync.defaultProps, ...props });
