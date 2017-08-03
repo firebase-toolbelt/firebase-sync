@@ -7,7 +7,7 @@ We provide a single `FirebaseSync` component that you may use directly or by wra
 
 ## Table of Contents
 
-[Demo](https://codesandbox.io/s/qKQ9DMMR)
+[Demo](https://codesandbox.io/s/jRrPXxKYy)
 
 [Setup](#setup)
 
