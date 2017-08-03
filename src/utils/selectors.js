@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 import get from 'lodash/get';
-import sort from 'lodash/sort';
+import sortBy from 'lodash/sortBy';
 import values from 'lodash/values';
 
 export const firebaseListSelector = ({ path, orderBy }) => (
@@ -11,7 +11,7 @@ export const firebaseListSelector = ({ path, orderBy }) => (
 
       return (orderBy === '.value')
         ? values(data).sort()
-        : sort(values(data), orderBy);
+        : sortBy(values(data), orderBy);
     }
   )
 );

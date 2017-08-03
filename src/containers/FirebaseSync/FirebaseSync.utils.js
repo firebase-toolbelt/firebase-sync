@@ -1,5 +1,5 @@
-import { fbFetchItem, fbSyncItem, fbUnsyncItem, fbSyncList, fbUnsyncList } from '../../../firebase/read';
-import { setItem, removeItem } from '../../../redux/actions';
+import { fbFetchItem, fbSyncItem, fbUnsyncItem, fbSyncList, fbUnsyncList } from '../../firebase/read';
+import { setItem, removeItem } from '../../redux/actions';
 import get from 'lodash/get';
 
 /**
@@ -95,25 +95,6 @@ function syncItem(props) {
 function unsyncItem(props) {
   return () => fbUnsyncItem(props);
 }
-
-  return new Promise((resolve, reject) => {
-    
-    let firstRead = true;
-
-    const fetchProps = {
-      ...props,
-      onSnap: (snap) => {
-        if (firstRead) {
-          firstRead = false;
-          resolve(snap);
-          setTimeout(() => fbUnsyncItem(fetchProps), 10 * 1000);
-        }
-      }
-    };
-
-    fbSyncItem(fetchProps, reject);
-
-  });
 
 function fetchItem(props) {
   return (dispatch, getState) => {
