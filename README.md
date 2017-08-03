@@ -11,7 +11,7 @@ We provide a single `FirebaseSync` component that you may use directly or by wra
 
 [Setup](#setup)
 
-[Setup with Immutable.js](#setup-with-immutable-js)
+[Setup with Immutable.js](#setup-with-immutablejs)
 
 [Getting Started](#getting-started)
 
