@@ -15,7 +15,15 @@ This is extremelly flexible and has been used for more than one year in producti
 
 [Modifying the stored objects](#modifying-the-stored-objects)
 
-[Working with lists](#working-with-lists)
+[Working with lists and queries](#working-with-lists)
+
+[Triggering side effects](#triggering-side-effects)
+
+[Local paths](#local-paths)
+
+[Fetching items](#fetching-items)
+
+[Full API](#full-api)
 
 ## Setup
 
@@ -177,6 +185,22 @@ export default connect(
 )(User)
 ```
 
-##  Working with lists
+##  Working with lists and queries
+
+[in progress]
+
+##  Triggering side effects
+
+[in progress]
+
+##  Local paths
+
+[in progress]
+
+##  Fetching items from code
+
+[in progress]
+
+##  Full API
 
 [in progress]
