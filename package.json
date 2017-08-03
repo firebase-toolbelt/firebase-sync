@@ -18,7 +18,15 @@
     "test:coverage": "nwb test-react --coverage",
     "test:watch": "nwb test-react --server"
   },
-  "dependencies": {},
+  "dependencies": {
+    "firebase": "^4.2.0",
+    "lodash": "^4.17.4",
+    "prop-types": "^15.5.10",
+    "react-redux": "^5.0.5",
+    "redux": "^3.7.2",
+    "reselect": "^3.0.1",
+    "shallow-equal": "^1.0.0"
+  },
   "peerDependencies": {
     "react": "15.x"
   },
@@ -27,11 +35,20 @@
     "react": "^15.6.1",
     "react-dom": "^15.6.1"
   },
-  "author": "",
-  "homepage": "",
-  "license": "MIT",
-  "repository": "",
+  "author": "Georges Boris",
+  "homepage": "https://github.com/tasking/firebase-sync#readme",
+  "license": "BSD-2-Clause",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tasking/firebase-sync.git"
+  },
   "keywords": [
     "react-component"
-  ]
+  ],
+  "directories": {
+    "test": "tests"
+  },
+  "bugs": {
+    "url": "https://github.com/tasking/firebase-sync/issues"
+  }
 }

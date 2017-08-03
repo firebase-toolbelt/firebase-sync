@@ -1,0 +1,121 @@
+import update from 'lodash';
+
+ /**
+  * Cache
+  * id: { count: 0, off: fn }
+  */
+
+const cache = {};
+
+function getCacheId(props) {
+
+  let cacheId = props.localPath || props.path;
+  if (props.cacheId) cacheId += `.${props.cacheId}`;
+  if (props.orderBy) cacheId += `?orderBy=${props.orderBy}`;
+  if (props.startAt) cacheId += `&startAt=${props.startAt}`;
+  if (props.endAt) cacheId += `&endAt=${props.endAt}`;
+  if (props.equalTo) cacheId += `&equalTo=${props.equalTo}`;
+  if (props.limitToLast) cacheId += `&limitToLast=${props.limitToLast}`;
+  if (props.limitToFirst) cacheId += `&limitToFirst=${props.limitToFirst}`;
+
+  return cacheId;
+
+}
+
+function cacheAdd(cacheId, fn) {
+  update(cache, [cacheId, 'count'], (x) => x ? x + 1 : 1);
+  if (cache[cacheId].count === 1) cache[cacheId].off = fn();
+  return cache[cacheId].count > 1;
+}
+
+function cacheRemove(cachePath, fn) {
+  update(cache, [cacheId, 'count'], (x) => x ? x - 1 : 0);
+  if (!cache[cacheId].count && !!cache[cacheId].off) fn(cache[cacheId].off);
+}
+
+/**
+ * Creating read reference
+ */
+
+function getPathRef(props) {
+
+  let ref = props.ref || props._ref.child(props.path);
+  
+  if (props.orderBy) {
+    switch (props.orderBy) {
+      case '.priority':
+        ref = ref.orderByPriority();
+        break;
+      case '.value':
+        ref = ref.orderByValue();
+        break;
+      case '.key':
+        ref = ref.orderByKey();
+        break;
+      default:
+        ref = ref.orderByChild(props.orderBy);
+        break;
+    }
+  }
+
+  if (props.startAt) ref = ref.startAt(props.startAt);
+  if (props.endAt) ref = ref.endAt(props.endAt);
+  if (props.equalTo) ref = ref.equalTo(props.equalTo);
+  if (props.limitToLast) ref = ref.limitToLast(props.limitToLast);
+  if (props.limitToFirst) ref = ref.limitToFirst(props.limitToFirst);
+
+  return ref;
+
+}
+
+export function fbSyncItem(props, onError) {
+  return cacheAdd(props, () =>
+    getPathRef(props).on('value', props.onSnap, onError));
+}
+
+export function fbUnsyncItem(props, onError) {
+  cacheRemove(props, (off) =>
+    getPathRef(props).off('value', off, onError));
+}
+
+export function fbSyncList(props) {
+  const ref = getPathRef(props);
+  return cacheAdd(props, () => {
+    const ref = getPathRef(props);
+    return {
+      added: ref.on('child_added', props.onSnapAdded),
+      changed: ref.on('child_changed', props.onSnapChanged),
+      removed: ref.on('child_removed', props.onSnapRemoved)
+    };
+  });
+}
+
+export function fbUnsyncList(props) {
+  cacheRemove(props, (off) => {
+    const ref = getPathRef(props);
+    ref.off('child_added', off.added, props.onError);
+    ref.off('child_changed', off.changed, props.onError);
+    ref.off('child_removed', off.removed, props.onError);
+  });
+}
+
+export function fbFetchItem(props) {
+  return new Promise((resolve, reject) => {
+    
+    let firstRead = true;
+
+    const fetchProps = {
+      ...props,
+      onSnap: (snap) => {
+        if (firstRead) {
+          firstRead = false;
+          resolve(snap);
+          setTimeout(() => fbUnsyncItem(fetchProps), 10 * 1000);
+        }
+      }
+    };
+
+    fbSyncItem(fetchProps, reject);
+
+  });
+}
