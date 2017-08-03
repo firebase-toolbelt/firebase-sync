@@ -90,6 +90,9 @@ export { FirebaseSync, firebaseListSelector };
 
 ##  Your first synced component
 
+We will build a simple user profile component that syncs the user object from your firebase database.
+There are two things that you should notice: we're using the absence of the user object on our state to show our loading state and our database object key is automatically saved on a special `_key` prop. We provide a *lot* more of this utilities.
+
 ```javascript
 import React from 'react'
 import { connect } from 'react-redux'
@@ -105,7 +108,7 @@ const User = (props) => (
     ) : (
       <p>
         <h1>User name: {props.user.name}</h1>
-        <p>User id: {props.user._key}</h1>       // we automatically save the item key on this special prop
+        <p>User id: {props.user._key}</h1>
       </p>
     )}
   
