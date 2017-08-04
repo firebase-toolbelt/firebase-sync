@@ -42,6 +42,7 @@ function cacheRemove(props, fn) {
 function getPathRef(props) {
 
   let ref = props.ref || props._ref.child(props.path);
+  let toString;
   
   if (props.orderBy) {
     switch (props.orderBy) {
@@ -53,6 +54,7 @@ function getPathRef(props) {
         break;
       case '.key':
         ref = ref.orderByKey();
+        toString = true;
         break;
       default:
         ref = ref.orderByChild(props.orderBy);
@@ -60,9 +62,18 @@ function getPathRef(props) {
     }
   }
 
-  if (props.startAt) ref = ref.startAt(props.startAt);
-  if (props.endAt) ref = ref.endAt(props.endAt);
-  if (props.equalTo) ref = ref.equalTo(props.equalTo);
+  if (props.startAt) ref = toString
+    ? ref.startAt(props.startAt.toString())
+    : ref.startAt(props.startAt);
+
+  if (props.endAt) ref = toString
+    ? ref.endAt(props.endAt.toString())
+    : ref.endAt(props.endAt);
+
+  if (props.equalTo) ref = toString
+    ? ref.equalTo(props.equalTo.toString())
+    : ref.equalTo(props.equalTo);
+
   if (props.limitToLast) ref = ref.limitToLast(props.limitToLast);
   if (props.limitToFirst) ref = ref.limitToFirst(props.limitToFirst);
 
