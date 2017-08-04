@@ -41,18 +41,20 @@ const getFirebaseSync = (firebase, store) => {
         
         // prevent no-op setup
         if (
-          this.lastProps &&
-          this.lastProps.path === nextProps.path &&
-          this.lastProps.localPath === nextProps.localPath &&
-          this.lastProps.fetch === nextProps.fetch &&
-          this.lastProps.orderBy === nextProps.orderBy &&
-          this.lastProps.ref === nextProps.ref &&
-          this.lastProps.cacheId === nextProps.cacheId &&
-          this.lastProps.startAt === nextProps.startAt &&
-          this.lastProps.endAt === nextProps.endAt &&
-          this.lastProps.equalTo === nextProps.equalTo &&
-          this.lastProps.limitToFirst === nextProps.limitToFirst &&
-          this.lastProps.limitToLast === nextProps.limitToLast
+          !nextProps || (
+            this.lastProps &&
+            this.lastProps.path === nextProps.path &&
+            this.lastProps.localPath === nextProps.localPath &&
+            this.lastProps.fetch === nextProps.fetch &&
+            this.lastProps.orderBy === nextProps.orderBy &&
+            this.lastProps.ref === nextProps.ref &&
+            this.lastProps.cacheId === nextProps.cacheId &&
+            this.lastProps.startAt === nextProps.startAt &&
+            this.lastProps.endAt === nextProps.endAt &&
+            this.lastProps.equalTo === nextProps.equalTo &&
+            this.lastProps.limitToFirst === nextProps.limitToFirst &&
+            this.lastProps.limitToLast === nextProps.limitToLast
+          )
         ) return;
 
         // bind new props
