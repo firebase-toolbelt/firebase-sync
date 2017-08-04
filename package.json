@@ -19,6 +19,7 @@
     "test:watch": "nwb test-react --server"
   },
   "dependencies": {
+    "build": "^0.1.4",
     "firebase": "^4.2.0",
     "lodash": "^4.17.4",
     "prop-types": "^15.5.10",
