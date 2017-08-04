@@ -41,7 +41,7 @@ var getFirebaseSync = function getFirebaseSync(firebase, store) {
         return _ret = (_temp = (_this = _possibleConstructorReturn(this, _Component.call.apply(_Component, [this].concat(args))), _this), _this.lastProps = null, _this._setup = debounce(function (nextProps) {
 
           // prevent no-op setup
-          if (_this.lastProps && _this.lastProps.path === nextProps.path && _this.lastProps.localPath === nextProps.localPath && _this.lastProps.fetch === nextProps.fetch && _this.lastProps.orderBy === nextProps.orderBy && _this.lastProps.ref === nextProps.ref && _this.lastProps.cacheId === nextProps.cacheId && _this.lastProps.startAt === nextProps.startAt && _this.lastProps.endAt === nextProps.endAt && _this.lastProps.equalTo === nextProps.equalTo && _this.lastProps.limitToFirst === nextProps.limitToFirst && _this.lastProps.limitToLast === nextProps.limitToLast) return;
+          if (!nextProps || _this.lastProps && _this.lastProps.path === nextProps.path && _this.lastProps.localPath === nextProps.localPath && _this.lastProps.fetch === nextProps.fetch && _this.lastProps.orderBy === nextProps.orderBy && _this.lastProps.ref === nextProps.ref && _this.lastProps.cacheId === nextProps.cacheId && _this.lastProps.startAt === nextProps.startAt && _this.lastProps.endAt === nextProps.endAt && _this.lastProps.equalTo === nextProps.equalTo && _this.lastProps.limitToFirst === nextProps.limitToFirst && _this.lastProps.limitToLast === nextProps.limitToLast) return;
 
           // bind new props
           if (nextProps) {
