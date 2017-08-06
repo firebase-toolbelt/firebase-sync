@@ -12,7 +12,7 @@ function getStatePath(basePath, path) {
   return path.map ? [basePath].concat(path) : [basePath].concat(path.split('/'));
 }
 
-export function getFirebaseSelector(basePath) {
+export function getFirebaseSyncSelector(basePath) {
   return function (options) {
 
     var path = void 0;
