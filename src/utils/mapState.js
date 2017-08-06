@@ -1,5 +1,5 @@
 import mapValues from 'lodash/mapValues';
-import { getFirebaseSyncSelector } from './selectors';
+import getFirebaseSyncSelector from './selector';
 
 export default function getFirebaseSyncMapState(basePath) {
   const selector = getFirebaseSyncSelector(basePath);

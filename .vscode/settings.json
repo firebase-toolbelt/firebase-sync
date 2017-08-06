@@ -1,0 +1,12 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+  "files.exclude": {
+    "**/es/": true,
+    "**/demo/dist/": true,
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.DS_Store": true,
+    "**/node_modules/": true,
+    "**/.tmp/": true
+  }
+}
