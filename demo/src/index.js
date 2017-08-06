@@ -6,7 +6,7 @@ import { Provider, connect } from 'react-redux';
 import { getFirebaseSyncReducer } from '../../src';
 
 import firebase from 'firebase';
-import { getFirebaseSync, getFirebaseListSelector } from '../../src';
+import { getFirebaseSync, getFirebaseSyncSelector } from '../../src';
 
 /**
  * Setup redux and bind firebaseSync reducer.
@@ -32,7 +32,7 @@ firebase.initializeApp({
  */
 
 const FirebaseSync = getFirebaseSync(firebase, store)();
-const firebaseListSelector = getFirebaseListSelector('firebase'); // reducer name
+const firebaseListSelector = getFirebaseSyncSelector('firebase'); // reducer name
 
 /**
  * After setting up.

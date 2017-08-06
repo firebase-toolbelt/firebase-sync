@@ -1,6 +1,6 @@
 import getFirebaseSync from './containers/FirebaseSync/FirebaseSync';
 import getFirebaseSyncReducer from './redux/reducer';
 import * as firebaseSyncActions from './redux/actions';
-import { getFirebaseListSelector } from './utils/selectors';
+import { getFirebaseSyncSelector } from './utils/selectors';
 
-export { getFirebaseSync, getFirebaseSyncReducer, firebaseSyncActions, getFirebaseListSelector };
+export { getFirebaseSync, getFirebaseSyncReducer, firebaseSyncActions, getFirebaseSyncSelector };
