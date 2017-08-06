@@ -50,9 +50,9 @@ import firebase from '/my-initialized-firebase-app';
 const reducerName = 'firebase';
 
 const FirebaseSync = getFirebaseSync(firebase, store)();
-const firebaseListSelector = getFirebaseListSelector(reducerName);
+const firebaseSyncSelector = getFirebaseSyncSelector(reducerName);
 
-export { FirebaseSync, firebaseListSelector };
+export { FirebaseSync, firebaseSyncSelector };
 ```
 
 ## Setup with Immutable.js
@@ -89,9 +89,9 @@ import { fromJS } from 'immutable';
 const reducerName = 'firebase';
 
 const FirebaseSync = getFirebaseSync(firebase, store)({ onPostProcessItem: fromJS });
-const firebaseListSelector = getFirebaseListSelector(reducerName);
+const firebaseSyncSelector = getFirebaseSyncSelector(reducerName);
 
-export { FirebaseSync, firebaseListSelector };
+export { FirebaseSync, firebaseSyncSelector };
 ```
 
 ##  Your first synced component
