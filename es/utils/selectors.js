@@ -2,6 +2,7 @@ import { createSelector } from 'reselect';
 import get from 'lodash/get';
 import sortBy from 'lodash/sortBy';
 import values from 'lodash/values';
+import isString from 'lodash/isString';
 
 function defaultSortFn(a, b) {
   return !isNaN(a) && !isNaN(b) ? parseFloat(a) - parseFloat(b) : a - b;
@@ -12,10 +13,17 @@ function getStatePath(basePath, path) {
 }
 
 export function getFirebaseSelector(basePath) {
-  return function (_ref) {
-    var path = _ref.path,
-        orderBy = _ref.orderBy;
+  return function (options) {
 
+    var path = void 0;
+    var orderBy = void 0;
+
+    if (isString(options)) {
+      path = options;
+    } else {
+      path = options.path;
+      orderBy = options.orderBy;
+    }
 
     var statePath = getStatePath(basePath, path);
 
