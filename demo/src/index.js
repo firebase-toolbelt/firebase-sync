@@ -181,7 +181,7 @@ const ConnectedDemo = connect(
       description: state.firebase.description,
       items: firebaseSyncSelector({
         path: 'items',
-        orderBy: 'title'
+        orderBy: '-title'
       })(state)
     };
   }
