@@ -6,6 +6,6 @@ import { getFirebaseSyncSelector } from './utils/selectors';
 export {
   getFirebaseSync,
   getFirebaseSyncReducer,
-  firebaseSyncActions,
-  getFirebaseSyncSelector
+  getFirebaseSyncSelector,
+  firebaseSyncActions
 };

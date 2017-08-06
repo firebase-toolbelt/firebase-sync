@@ -32,7 +32,7 @@ firebase.initializeApp({
  */
 
 const FirebaseSync = getFirebaseSync(firebase, store)();
-const firebaseListSelector = getFirebaseSyncSelector('firebase'); // reducer name
+const firebaseSyncSelector = getFirebaseSyncSelector('firebase'); // reducer name
 
 /**
  * After setting up.
@@ -179,7 +179,7 @@ const ConnectedDemo = connect(
     return {
       title: state.firebase.title,
       description: state.firebase.description,
-      items: firebaseListSelector({
+      items: firebaseSyncSelector({
         path: 'items',
         orderBy: 'title'
       })(state)

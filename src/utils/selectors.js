@@ -42,9 +42,21 @@ export function getFirebaseSyncSelector(basePath) {
           : possiblyImmData;
 
         if (!!orderBy) {
-          return (orderBy === '.value')
+
+          let reverse = orderBy.indexOf('-') === 0;
+          
+          if (reverse) {
+            orderBy = orderBy.slice(1);
+          }
+
+          let orderedData = (orderBy === '.value')
             ? values(data).sort(defaultSortFn)
             : sortBy(values(data), orderBy);
+          
+          return reverse
+            ? orderedData.reverse()
+            : orderedData;
+
         }
         
         return data;
