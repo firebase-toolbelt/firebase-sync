@@ -1,29 +1,20 @@
 # firebase-sync
 
-Bind your firebase backedn to your redux state with a dead simple component based approach.
-This is extremelly flexible and has been used for more than one year in production apps.
+Bind your firebase backend to your redux state with a dead simple component based approach.
+We also provide a lot of utilities making this lib extremelly flexible for your app's needs.
+This has been used for more than one year in production apps.
 
 ## Table of Contents
 
-[Setup](#setup)
+[Setting up](#setting-up)
 
-[Setup with Immutable.js](#setup-with-immutablejs)
+[Setting up with Immutable.js](#setting-up-with-immutablejs)
 
 [Your first synced component](#your-first-synced-component)
 
-[Modifying the stored objects](#modifying-the-stored-objects)
+[Documentation](wiki)
 
-[Working with lists and queries](#working-with-lists)
-
-[Triggering side effects](#triggering-side-effects)
-
-[Local paths](#local-paths)
-
-[Fetching items](#fetching-items)
-
-[Full API](#full-api)
-
-## Setup
+## Setting up
 
 First you must add the firebase-sync reducer to your app's reducers.
 
@@ -37,25 +28,31 @@ First you must add the firebase-sync reducer to your app's reducers.
   })
 ```
 
-Then you would normally setup the firebase-sync component and selector.
-These components will then be used throughout your app.
+Then you would normally setup the firebase-sync component, selector and map state util.
+These will then be used throughout your app.
 
 ```javascript
 // ./lib/FirebaseSync.js
 
 import store from './my-redux-store';
 import firebase from '/my-initialized-firebase-app';
+import {
+  getFirebaseSync,
+  getFirebaseSyncSelector,
+  getFirebaseSyncMapState
+} from 'firebase-sync';
 
 // the reducer name you have used in your root reducer.
 const reducerName = 'firebase';
 
 const FirebaseSync = getFirebaseSync(firebase, store)();
-const firebaseSyncSelector = getFirebaseSyncSelector(reducerName);
+const fbsSelector = getFirebaseSyncSelector(reducerName);
+const fbsMapState = getFirebaseSyncMapState(reducerName);
 
-export { FirebaseSync, firebaseSyncSelector };
+export { FirebaseSync, fbsSelector, fbsMapState };
 ```
 
-## Setup with Immutable.js
+## Setting up with Immutable.js
 
 (If you're not using Immutable.js you can skip to the [Getting Started](#getting-started) guide.
 
@@ -83,15 +80,22 @@ This way everything is saved as an Immutable object on your app's state.
 
 import store from './my-redux-store';
 import firebase from '/my-initialized-firebase-app';
+import {
+  getFirebaseSync,
+  getFirebaseSyncSelector,
+  getFirebaseSyncMapState
+} from 'firebase-sync';
+
 import { fromJS } from 'immutable';
 
 // the reducer name you have used in your root reducer.
 const reducerName = 'firebase';
 
 const FirebaseSync = getFirebaseSync(firebase, store)({ onPostProcessItem: fromJS });
-const firebaseSyncSelector = getFirebaseSyncSelector(reducerName);
+const fbsSelector = getFirebaseSyncSelector(reducerName);
+const fbsMapState = getFirebaseSyncMapState(reducerName);
 
-export { FirebaseSync, firebaseSyncSelector };
+export { FirebaseSync, fbsSelector, fbsMapState };
 ```
 
 ##  Your first synced component
@@ -104,7 +108,7 @@ There are two things that you should notice:
 ```javascript
 import React from 'react'
 import { connect } from 'react-redux'
-import get from 'lodash/get'
+import { FirebaseSync, fbsMapState } from '../lib/FirebaseSync'
 
 const User = (props) => (
   <div>
@@ -123,82 +127,14 @@ const User = (props) => (
   </div>
 )
 
-export default connect((state, props) => ({
-  user: get(state, ['users', props.userId])
-}))(User)
-```
-
-## Modifying the stored objects
-
-Sometimes we want to alter the object we're gonna use inside our components.
-It's really simple to do it with firebase-sync as we can process each object before they are saved on our state.
-You should also notice how we create a component that encapsulates our FirebaseSync object, this enables a lot of composition possibilities and is considered a good practice.
-
-```javascript
-// ./containers/FirebaseSyncUser.js
-
-import React from 'react'
-import { FirebaseSync } from '../lib/FirebaseSync'
-
-function processUser(user) {
-  return {
-    ...user,
-    displayName: `${user.firstName} ${user.lastName}`
-  };
-}
-
-const FirebaseSyncUser = ({ userId }) => (
-  <FirebaseSync
-    path=`users/${userId}`
-    onProcessItem={processUser} />
-)
-
-export default FirebaseSyncUser
-```
-
-```javascript
-// ./containers/User.js
-
-import React from 'react';
-import FirebaseSyncUser from '../FirebaseSyncUser'
-
-const User = (props) => (
-  <div>
-  
-    <FirebaseSyncUser userId={props.userId} />
-    
-    {(props.user) && (
-      <div>
-        <h1>{user.displayName}</h1>
-      </div>
-    )}
-  
-  </div>
-)
-
 export default connect(
-  (state, props) => ({
-    user: get(state, ['user', props.userId])
+  fbsMapState((state, props) => ({
+    user: `users/${props.userId}`
   })
 )(User)
 ```
 
-##  Working with lists and queries
+## Documentation
 
-[in progress]
-
-##  Triggering side effects
-
-[in progress]
-
-##  Local paths
-
-[in progress]
-
-##  Fetching items from code
-
-[in progress]
-
-##  Full API
-
-[in progress]
+Check out our full documentation on the [wiki](wiki).
+Or go directly to our [Full API](wiki/full-api)
