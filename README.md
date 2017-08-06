@@ -12,7 +12,7 @@ This has been used for more than one year in production apps.
 
 [Your first synced component](#your-first-synced-component)
 
-[Documentation](wiki)
+[Documentation](https://github.com/tasking/firebase-sync/wiki)
 
 ## Setting up
 
@@ -136,5 +136,5 @@ export default connect(
 
 ## Documentation
 
-Check out our full documentation on the [wiki](wiki).
-Or go directly to our [Full API](wiki/full-api)
+Check out our full documentation on the [wiki](https://github.com/tasking/firebase-sync/wiki).
+Or go directly to our [Full API](https://github.com/tasking/firebase-sync/wiki/full-api)
