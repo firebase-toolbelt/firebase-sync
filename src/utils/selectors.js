@@ -14,7 +14,7 @@ function getStatePath(basePath, path) {
     : [basePath].concat(path.split('/'));
 }
 
-export function getFirebaseSelector(basePath) {
+export function getFirebaseSyncSelector(basePath) {
   return (options) => {
 
     let path;
