@@ -1,6 +1,6 @@
 {
   "name": "firebase-sync",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "firebase-sync React component",
   "main": "lib/index.js",
   "module": "es/index.js",
