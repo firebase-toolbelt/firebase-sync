@@ -3,6 +3,7 @@ import get from 'lodash/get';
 import sortBy from 'lodash/sortBy';
 import values from 'lodash/values';
 import isString from 'lodash/isString';
+import isArray from 'lodash/isArray';
 
 function defaultSortFn(a, b) {
   return (!isNaN(a) && !isNaN(b)) ? parseFloat(a) - parseFloat(b) : a - b;
@@ -20,7 +21,7 @@ export default function getFirebaseSyncSelector(basePath) {
     let path;
     let orderBy;
 
-    if (isString(options)) {
+    if (isString(options) || isArray(options)) {
       path = options;
     } else {
       path = options.path;
