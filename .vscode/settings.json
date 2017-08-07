@@ -2,6 +2,7 @@
 {
   "files.exclude": {
     "**/es/": true,
+    "**/lib/": true,
     "**/demo/dist/": true,
     "**/.git": true,
     "**/.svn": true,
