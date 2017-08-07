@@ -38,18 +38,16 @@ import store from './my-redux-store';
 import firebase from '/my-initialized-firebase-app';
 import {
   getFirebaseSync,
-  getFirebaseSyncSelector,
-  getFirebaseSyncMapState
+  getFirebaseSyncConnect
 } from 'firebase-sync';
 
 // the reducer name you have used in your root reducer.
 const reducerName = 'firebase';
 
 const FirebaseSync = getFirebaseSync(firebase, store)();
-const fbsSelector = getFirebaseSyncSelector(reducerName);
-const fbsMapState = getFirebaseSyncMapState(reducerName);
+const fbsSelector = getFirebaseSyncConnect(reducerName);
 
-export { FirebaseSync, fbsSelector, fbsMapState };
+export { FirebaseSync, FirebaseSyncConnect };
 ```
 
 ## Setting up with Immutable.js
@@ -82,8 +80,7 @@ import store from './my-redux-store';
 import firebase from '/my-initialized-firebase-app';
 import {
   getFirebaseSync,
-  getFirebaseSyncSelector,
-  getFirebaseSyncMapState
+  getFirebaseSyncConnect
 } from 'firebase-sync';
 
 import { fromJS } from 'immutable';
@@ -92,10 +89,9 @@ import { fromJS } from 'immutable';
 const reducerName = 'firebase';
 
 const FirebaseSync = getFirebaseSync(firebase, store)({ onPostProcessItem: fromJS });
-const fbsSelector = getFirebaseSyncSelector(reducerName);
-const fbsMapState = getFirebaseSyncMapState(reducerName);
+const fbsSelector = getFirebaseSyncConnect(reducerName);
 
-export { FirebaseSync, fbsSelector, fbsMapState };
+export { FirebaseSync, FirebaseSyncConnect };
 ```
 
 ##  Your first synced component
@@ -108,7 +104,7 @@ There are two things that you should notice:
 ```javascript
 import React from 'react'
 import { connect } from 'react-redux'
-import { FirebaseSync, fbsMapState } from '../lib/FirebaseSync'
+import { FirebaseSync, firebaseSyncConnect } from '../lib/FirebaseSync'
 
 const User = (props) => (
   <div>
@@ -127,11 +123,9 @@ const User = (props) => (
   </div>
 )
 
-export default connect(
-  fbsMapState((state, props) => ({
-    user: `users/${props.userId}`
-  })
-)(User)
+export default firebaseSyncConnect((state, props) => ({
+  user: `users/${props.userId}`
+})(User)
 ```
 
 ## Documentation
