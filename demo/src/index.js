@@ -6,13 +6,14 @@ import { Provider, connect } from 'react-redux';
 import { getFirebaseSyncReducer } from '../../src';
 
 import firebase from 'firebase';
-import { getFirebaseSync, getFirebaseSyncMapState } from '../../src';
+import { getFirebaseSync, getFirebaseSyncConnect } from '../../src';
 
 /**
  * Setup redux and bind firebaseSync reducer.
  */
 
 const store = createStore(combineReducers({
+  appTitle: (state = 'demo') => state,
   firebase: getFirebaseSyncReducer()
 }));
 
@@ -32,7 +33,7 @@ firebase.initializeApp({
  */
 
 const FirebaseSync = getFirebaseSync(firebase, store)();
-const firebaseSyncMapState = getFirebaseSyncMapState('firebase'); // reducer name
+const firebaseSyncConnect = getFirebaseSyncConnect('firebase'); // reducer name
 
 /**
  * After setting up.
@@ -85,6 +86,8 @@ class Demo extends Component {
     return (
       <Provider store={store}>
         <div>
+
+          <h1>{props.appTitle}</h1>
           
           <div>
             
@@ -174,13 +177,13 @@ class Demo extends Component {
   }
 }
 
-const ConnectedDemo = connect(
-  firebaseSyncMapState(() => ({
-    title: 'title',
-    description: 'description',
-    items: { path: 'items', orderBy: 'title' }
-  }))
-)(Demo);
+const ConnectedDemo = firebaseSyncConnect((state) => [{
+  title: 'title',
+  description: 'description',
+  items: { path: 'items', orderBy: 'title' }
+}, {
+  appTitle: state.appTitle
+}])(Demo);
 
 const DemoWrapper = () => (
   <Provider store={store}>
