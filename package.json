@@ -17,9 +17,9 @@
     "test": "nwb test-react",
     "test:coverage": "nwb test-react --coverage",
     "test:watch": "nwb test-react --server",
-    "deploy:patch": "npm run build && npm version patch && git push && npm deploy",
-    "deploy:minor": "npm run build && npm version minor && git push && npm deploy",
-    "deploy:major": "npm run build && npm version major && git push && npm deploy"
+    "deploy:patch": "npm run build && npm version patch && git push && npm publish",
+    "deploy:minor": "npm run build && npm version minor && git push && npm publish",
+    "deploy:major": "npm run build && npm version major && git push && npm publish"
   },
   "dependencies": {
     "build": "^0.1.4",
