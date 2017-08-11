@@ -81,6 +81,10 @@ class Demo extends Component {
     });
   }
 
+  clearStateList = () => {
+    firebase.database().ref('items').remove();
+  }
+
   render() {
     const props = this.props;
     return (
@@ -142,7 +146,7 @@ class Demo extends Component {
             
             <FirebaseSync
               path='items'
-              orderBy='title'
+              orderBy='.key'
               onLoad={() => {
                 this.setState({ loadingItems: false })
               }} />
@@ -166,6 +170,7 @@ class Demo extends Component {
               <form onSubmit={this.pushListItem}>
                 <input value={this.state.listItem} placeholder='…' onChange={this.changeStateListItem} />
                 <button type='submit'>add to list</button>
+                <button type='button' onClick={this.clearStateList}>clear list</button>
               </form>
             )}
 
