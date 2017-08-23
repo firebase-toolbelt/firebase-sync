@@ -36,16 +36,15 @@ These will then be used throughout your app.
 
 import store from './my-redux-store';
 import firebase from '/my-initialized-firebase-app';
-import {
-  getFirebaseSync,
-  getFirebaseSyncConnect
-} from 'firebase-sync';
+import buildFirebaseSync from 'firebase-sync';
 
 // the reducer name you have used in your root reducer.
 const reducerName = 'firebase';
 
-const FirebaseSync = getFirebaseSync(firebase, store)();
-const firebaseSyncConnect = getFirebaseSyncConnect(reducerName);
+const {
+  FirebaseSync,
+  firebaseSyncConnect
+} = buildFirebaseSync({ firebase, store, basePath: reducerName });
 
 export { FirebaseSync, firebaseSyncConnect };
 ```
@@ -78,18 +77,24 @@ This way everything is saved as an Immutable object on your app's state.
 
 import store from './my-redux-store';
 import firebase from '/my-initialized-firebase-app';
-import {
-  getFirebaseSync,
-  getFirebaseSyncConnect
-} from 'firebase-sync';
+import buildFirebaseSync from 'firebase-sync';
 
 import { fromJS } from 'immutable';
 
 // the reducer name you have used in your root reducer.
 const reducerName = 'firebase';
 
-const FirebaseSync = getFirebaseSync(firebase, store)({ onPostProcessItem: fromJS });
-const firebaseSyncConnect = getFirebaseSyncConnect(reducerName);
+const {
+  FirebaseSync,
+  firebaseSyncConnect
+} = buildFirebaseSync({
+  firebase,
+  store,
+  basePath: reducerName,
+  defaultProps: {
+    onPostProcessItem: fromJS
+  }
+});
 
 export { FirebaseSync, firebaseSyncConnect };
 ```

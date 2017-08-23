@@ -4,26 +4,18 @@ import { Component } from 'react';
 import { connect } from 'react-redux';
 // utils
 import debounce from 'lodash/debounce';
-import getFirebaseRef from '../../firebase/getFirebaseRef';
 // etc
 import propTypes from './FirebaseSync.propTypes';
-import {
-  fetchItem,
-  syncItem,
-  unsyncItem,
-  syncList,
-  unsyncList
- } from './FirebaseSync.utils';
 
-const getFirebaseSync = (firebase, store) => {
+const getFirebaseSync = (getHelpers) => {
   return (defaultProps = {}) => {
 
-    const _ref = getFirebaseRef(firebase);
+    const _helpers = getHelpers(defaultProps);
 
     class FirebaseSync extends Component {
 
       static propTypes = propTypes
-      static defaultProps = { ...defaultProps, _ref }
+      static defaultProps = defaultProps
 
       lastProps = null
 
@@ -61,20 +53,20 @@ const getFirebaseSync = (firebase, store) => {
         if (nextProps) {
           if (nextProps.orderBy) {
             (nextProps.fetch)
-              ? fetchList(nextProps)
-              : syncList(nextProps);
+              ? _helpers.fetchList(nextProps)
+              : _helpers.syncList(nextProps);
           } else {
             (nextProps.fetch)
-              ? fetchItem(nextProps, store.getState)
-              : syncItem(nextProps);
+              ? _helpers.fetchItem(nextProps)
+              : _helpers.syncItem(nextProps);
           }
         }
 
         // unbind last props
         if (this.lastProps && !this.lastProps.fetch) {
           (this.lastProps.orderBy)
-            ? unsyncList(this.lastProps)
-            : unsyncItem(this.lastProps);
+            ? _helpers.unsyncList(this.lastProps)
+            : _helpers.unsyncItem(this.lastProps);
         }
 
         // save last props
@@ -83,33 +75,12 @@ const getFirebaseSync = (firebase, store) => {
       }, 200)
 
       /**
-       * Utility functions for usage outside react
-       */
-
-      fetchItem = (props) => (
-        fetchItem({ ...FirebaseSync.defaultProps, ...props }, store.getState)
-      )
-      syncItem = (props) => {
-        syncItem({ ...FirebaseSync.defaultProps, ...props });
-      }
-      unsyncItem = (props) => {
-        unsyncItem({ ...FirebaseSync.defaultProps, ...props });
-      }
-      syncList = (props) => {
-        syncList({ ...FirebaseSync.defaultProps, ...props });
-      }
-      unsyncList = (props) => {
-        unsyncList({ ...FirebaseSync.defaultProps, ...props });
-      }
-
-      /**
        * No need to render.
        */
       
       render() {
         return null;
       }
-
     }
 
     return connect()(FirebaseSync);

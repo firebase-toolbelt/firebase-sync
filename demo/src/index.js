@@ -6,7 +6,7 @@ import { Provider, connect } from 'react-redux';
 import { getFirebaseSyncReducer } from '../../src';
 
 import firebase from 'firebase';
-import { getFirebaseSync, getFirebaseSyncConnect } from '../../src';
+import buildFirebaseSync from '../../src';
 
 /**
  * Setup redux and bind firebaseSync reducer.
@@ -32,8 +32,14 @@ firebase.initializeApp({
  * Setup components
  */
 
-const FirebaseSync = getFirebaseSync(firebase, store)();
-const firebaseSyncConnect = getFirebaseSyncConnect('firebase'); // reducer name
+const {
+  FirebaseSync,
+  firebaseSyncHelpers,
+  firebaseSyncConnect
+} = buildFirebaseSync({
+  firebase: firebase,
+  store: store
+});
 
 /**
  * After setting up.
@@ -44,11 +50,17 @@ class Demo extends Component {
 
   state = {
     title: '',
+    subtitle: null,
     description: '',
     listItem: '',
     loadingTitle: true,
     loadingDescription: true,
     loadingItems: true
+  }
+
+  componentDidMount() {
+    firebaseSyncHelpers.fetchItem({ path: 'subtitle' })
+      .then((subtitle) => this.setState({ subtitle }));
   }
 
   changeStateTitle = (e) => {
@@ -92,6 +104,19 @@ class Demo extends Component {
         <div>
 
           <h1>{props.appTitle}</h1>
+
+          <div style={{ height: 40 }} />
+
+          {!this.state.subtitle ? (
+            <div>fetching something programatically…</div>
+          ) : (
+            <div>
+              <p>this has been fetched programatically:</p>
+              <p>{this.state.subtitle}</p>
+            </div>
+          )}
+
+          <div style={{ height: 40 }} />
           
           <div>
             

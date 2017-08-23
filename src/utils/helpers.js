@@ -1,5 +1,7 @@
-import { fbSyncItem, fbUnsyncItem, fbSyncList, fbUnsyncList } from '../../firebase/read';
-import { setItem, removeItem } from '../../redux/actions';
+import getFirebaseRef from '../firebase/getFirebaseRef';
+import { fbSyncItem, fbUnsyncItem, fbSyncList, fbUnsyncList } from '../firebase/read';
+import { setItem, removeItem } from '../redux/actions';
+import getFirebaseSyncSelector from './selector';
 import get from 'lodash/get';
 import isString from 'lodash/isString';
 import isNumber from 'lodash/isNumber';
@@ -60,23 +62,13 @@ function onSnap(snap, props, store, innerState, appendKeyToPath, forceRemove) {
 
 }
 
-function getLocalPathItem(props, store) {
-
-  const curState = store.getState();
-  const path = props.localPath || props.path;
-  const statePath = [props.basePath].concat(path.split('/'));
-
-  return get(curState, statePath);
-
-}
-
 /**
  * ============================================================================
  * Items
  * ============================================================================
  */
 
-function syncItem(props, store) {
+function syncItem(props, store, selector) {
 
   /**
    * fbSyncItem returns true if the listener is already active.
@@ -103,7 +95,7 @@ function unsyncItem(props) {
   return () => fbUnsyncItem(props);
 }
 
-function fetchItem(props, store) {
+function fetchItem(props, store, selector) {
 
   /**
    * Soft fetch only reaches server if no local item is found.
@@ -115,7 +107,7 @@ function fetchItem(props, store) {
      * We will try to fetch local item on both mutable and immutable states.
      */
     
-    const localItem = getLocalPathItem(props, store);
+    const localItem = selector(props)(store.getState());
 
     if (localItem) {
       props.onLoad && props.onLoad();
@@ -147,7 +139,7 @@ function fetchItem(props, store) {
         if (firstRead) {
           firstRead = false;
           props.onLoad && props.onLoad();
-          resolve(getLocalPathItem(props, store));
+          resolve(selector(props)(store.getState()));
           setTimeout(() => fbUnsyncItem(props), 10 * 1000);
         }
       }
@@ -162,7 +154,7 @@ function fetchItem(props, store) {
  * ============================================================================
  */
 
-function syncList(props, store) {
+function syncList(props, store, selector) {
 
   /**
    * fbSyncList returns true if the listener is already active.
@@ -211,10 +203,20 @@ function unsyncList(props) {
  * ============================================================================
  */
 
-export {
-  fetchItem,
-  syncItem,
-  unsyncItem,
-  syncList,
-  unsyncList
+const getFirebaseSyncHelpers = (firebase, store) => (_defaultProps = {}) => {
+  
+  const _ref = getFirebaseRef(firebase);
+  const defaultProps = { basePath: 'firebase', ..._defaultProps, _ref, dispatch: store.dispatch };
+  const selector = getFirebaseSyncSelector(defaultProps.basePath);
+
+  return {
+    fetchItem: (props)  => fetchItem({  ...defaultProps, ...props }, store, selector),
+    syncItem: (props)   => syncItem({   ...defaultProps, ...props }, store, selector),
+    syncList: (props)   => syncList({   ...defaultProps, ...props }, store, selector),
+    unsyncItem: (props) => unsyncItem({ ...defaultProps, ...props }),
+    unsyncList: (props) => unsyncList({ ...defaultProps, ...props })
+  };
+
 };
+
+export default getFirebaseSyncHelpers;
