@@ -3,8 +3,7 @@ import { fbSyncItem, fbUnsyncItem, fbSyncList, fbUnsyncList } from '../firebase/
 import { setItem, removeItem } from '../redux/actions';
 import getFirebaseSyncSelector from './selector';
 import get from 'lodash/get';
-import isString from 'lodash/isString';
-import isNumber from 'lodash/isNumber';
+import isPlainObject from 'lodash/isPlainObject';
 
 /**
  * ============================================================================
@@ -15,11 +14,12 @@ import isNumber from 'lodash/isNumber';
 function parseItem(snap, props) {
   let item = snap.exportVal();
 
-  if (item && !isString(item) && !isNumber(item)) {
+  if (isPlainObject(item)) {
     item._key = snap.key;
-    item = props.onProcessItem ? props.onProcessItem(item) : item;
-    item = props.onPostProcessItem ? props.onPostProcessItem(item) : item;
   }
+
+  item = props.onProcessItem ? props.onProcessItem(item) : item;
+  item = props.onPostProcessItem ? props.onPostProcessItem(item) : item;
 
   return item;
 }
