@@ -44,7 +44,7 @@ const reducerName = 'firebase';
 const {
   FirebaseSync,
   firebaseSyncConnect
-} = buildFirebaseSync({ firebase, store, basePath: reducerName });
+} = buildFirebaseSync({ firebase, store, reducerName });
 
 export { FirebaseSync, firebaseSyncConnect };
 ```
@@ -90,7 +90,7 @@ const {
 } = buildFirebaseSync({
   firebase,
   store,
-  basePath: reducerName,
+  reducerName,
   defaultProps: {
     onPostProcessItem: fromJS
   }

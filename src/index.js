@@ -10,7 +10,7 @@ export { getFirebaseSyncReducer };
 
 export default function buildFirebaseSync(options) {
 
-  const minDefaultProps = { basePath: options.basePath || 'firebase' };
+  const minDefaultProps = { basePath: options.basePath || options.reducerName || 'firebase' };
   const defaultProps = options.userDefaultProps ? { ...minDefaultProps, ...options.userDefaultProps } : minDefaultProps;
   const basePath = defaultProps.basePath;
 
