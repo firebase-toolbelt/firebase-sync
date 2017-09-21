@@ -1,8 +1,6 @@
-# firebase-sync
+<a align="center" href="https://keeptasking.com"><img width="100%" src="https://image.ibb.co/kNn3M5/Firebase_Sync.png" alt="Firebase Sync" border="0" /></a>
 
-Bind your firebase backend to your redux state with a dead simple component based approach.
-We also provide a lot of utilities making this lib extremelly flexible for your app's needs.
-This has been used for more than one year in production apps.
+> Bind your firebase backend to your redux state with a dead simple component based approach.
 
 ## Table of Contents
 
