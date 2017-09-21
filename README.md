@@ -134,4 +134,4 @@ export default firebaseSyncConnect((state, props) => ({
 ## Documentation
 
 Check out our full documentation on the [wiki](https://github.com/tasking/firebase-sync/wiki).
-Or go directly to our [Full API](https://github.com/tasking/firebase-sync/wiki/full-api)
+Or go directly to our [Full API](https://github.com/tasking/firebase-sync/wiki/full-api).
