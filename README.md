@@ -1,4 +1,4 @@
-<a align="center" href="https://github.com/tasking/firebase-toolbelt"><img width="100%" src="https://image.ibb.co/kNn3M5/Firebase_Sync.png" alt="Firebase Sync" border="0" /></a>
+<a align="center" href="https://github.com/tasking/firebase-toolbelt"><img width="100%" src="https://i.imgur.com/cNLtxzM.png" alt="Firebase Sync" border="0" /></a>
 
 > Bind your firebase backend to your redux state with a dead simple component based approach.
 
