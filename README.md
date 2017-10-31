@@ -1,4 +1,4 @@
-<a align="center" href="https://github.com/tasking/firebase-toolbelt"><img width="100%" src="https://i.imgur.com/cNLtxzM.png" alt="Firebase Sync" border="0" /></a>
+<a align="center" href="https://github.com/firebase-toolbelt/firebase-toolbelt"><img width="100%" src="https://i.imgur.com/cNLtxzM.png" alt="Firebase Sync" border="0" /></a>
 
 > Bind your firebase backend to your redux state with a dead simple component based approach.
 
@@ -10,7 +10,7 @@
 
 [Your first synced component](#your-first-synced-component)
 
-[Documentation](https://github.com/tasking/firebase-sync/wiki)
+[Documentation](https://github.com/firebase-toolbelt/firebase-sync/wiki)
 
 ## Setting up
 
@@ -133,5 +133,5 @@ export default firebaseSyncConnect((state, props) => ({
 
 ## Documentation
 
-Check out our full documentation on the [wiki](https://github.com/tasking/firebase-sync/wiki).
-Or go directly to our [Full API](https://github.com/tasking/firebase-sync/wiki/full-api).
+Check out our full documentation on the [wiki](https://github.com/firebase-toolbelt/firebase-sync/wiki).
+Or go directly to our [Full API](https://github.com/firebase-toolbelt/firebase-sync/wiki/full-api).
