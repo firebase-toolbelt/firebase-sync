@@ -52,7 +52,7 @@ function onSnap(snap, props, store, innerState, appendKeyToPath, forceRemove) {
   if (item !== null) {
     props.dispatch(setItem(path, item))
     if (props.onValue) {
-      if (isPlainObject(item) && item.toJS) {
+      if (typeof item === 'object' && item.toJS) {
         props.onValue(item.toJS())
       } else {
         props.onValue(item)
