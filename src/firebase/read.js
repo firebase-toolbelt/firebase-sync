@@ -38,8 +38,17 @@ function cacheRemove(props, fn) {
  */
 
 function getPathRef(props) {
-  let ref = props.ref || props._ref.child(props.path)
+  let ref
   let toString
+
+  if (props.ref) {
+    ref = props.ref
+  }
+  if (props.path.length === 0 || props.path === '/') {
+    ref = props._ref
+  } else {
+    ref = props._ref.child(props.path)
+  }
 
   if (props.orderBy) {
     switch (props.orderBy) {

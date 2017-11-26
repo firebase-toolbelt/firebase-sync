@@ -34,9 +34,12 @@
     "react": "15.x"
   },
   "devDependencies": {
+    "immutable": "^3.8.2",
     "nwb": "0.18.x",
     "react": "^15.6.1",
-    "react-dom": "^15.6.1"
+    "react-dom": "^15.6.1",
+    "react-json-pretty": "^1.7.4",
+    "redux-logger": "^3.0.6"
   },
   "author": "Georges Boris",
   "homepage": "https://github.com/tasking/firebase-sync#readme",
