@@ -12,6 +12,14 @@ import isPlainObject from 'lodash/isPlainObject'
 
 /**
  * ============================================================================
+ * Config
+ * ============================================================================
+ */
+
+const QUERY_TIMEOUT = 2000
+
+/**
+ * ============================================================================
  * Common
  * ============================================================================
  */
@@ -29,7 +37,21 @@ function parseItem(snap, props) {
   return item
 }
 
-function onSnap(snap, props, store, innerState, appendKeyToPath, forceRemove) {
+function parseOnValueItem(item) {
+  return item === 'object' && item.toJS ? item.toJS() : item
+}
+
+function triggerOnValue(item, props, storeOrPrevItem, selector) {
+  if (!props.onValue) return
+
+  const prevItem = selector
+    ? selector(props)(storeOrPrevItem.getState())
+    : storeOrPrevItem
+
+  props.onValue(parseOnValueItem(item), parseOnValueItem(prevItem))
+}
+
+function onSnap(snap, props, store, selector, appendKeyToPath, forceRemove) {
   /**
    * Parse item.
    */
@@ -46,30 +68,19 @@ function onSnap(snap, props, store, innerState, appendKeyToPath, forceRemove) {
   if (appendKeyToPath) path = path.concat(snap.key)
 
   /**
+   * Trigger side effects
+   */
+
+  triggerOnValue(item, props, store, selector)
+
+  /**
    * Update state.
    */
 
   if (item !== null) {
     props.dispatch(setItem(path, item))
-    if (props.onValue) {
-      if (typeof item === 'object' && item.toJS) {
-        props.onValue(item.toJS())
-      } else {
-        props.onValue(item)
-      }
-    }
   } else {
-    props.onRemove && props.onRemove(snap.key)
     props.dispatch(removeItem(path))
-  }
-
-  /**
-   * Update state of caller.
-   */
-
-  if (innerState && !innerState.loaded) {
-    props.onLoad && props.onLoad()
-    innerState.loaded = true
   }
 }
 
@@ -80,24 +91,29 @@ function onSnap(snap, props, store, innerState, appendKeyToPath, forceRemove) {
  */
 
 function syncItem(props, store, selector) {
-  /**
-   * fbSyncItem returns true if the listener is already active.
-   */
+  // used for forcing `onValue` calls
+  // when dealing with cached listeners
+  let loaded = false
 
-  let innerState = {
-    loaded: fbSyncItem({
-      ...props,
-      onSnap: snap => onSnap(snap, props, store, innerState)
-    })
-  }
+  fbSyncItem({
+    ...props,
+    onError: () => (loaded = true),
+    onSnap: snap => {
+      loaded = true
+      onSnap(snap, props, store, selector)
+    }
+  })
 
-  /**
-   * If already active, trigger onLoad event.
-   */
-
-  if (innerState.loaded) {
-    props.onLoad && props.onLoad()
-  }
+  // if query is not fetched in threshold time,
+  // manually call `onValue` with local item
+  // as this probably mean the query is cached
+  setTimeout(() => {
+    if (!loaded && props.onValue) {
+      loaded = true
+      const localItem = selector(props)(store.getState())
+      triggerOnValue(localItem, props, localItem)
+    }
+  }, QUERY_TIMEOUT)
 }
 
 function unsyncItem(props) {
@@ -110,14 +126,9 @@ function fetchItem(props, store, selector) {
    */
 
   if (props.fetch === 'soft') {
-    /**
-     * We will try to fetch local item on both mutable and immutable states.
-     */
-
     const localItem = selector(props)(store.getState())
-
     if (localItem) {
-      props.onLoad && props.onLoad()
+      triggerOnValue(localItem, props, localItem)
       return Promise.resolve(localItem)
     }
   }
@@ -138,17 +149,21 @@ function fetchItem(props, store, selector) {
   return new Promise((resolve, reject) => {
     let firstRead = true
 
-    syncItem({
-      ...props,
-      onLoad: () => {
-        if (firstRead) {
-          firstRead = false
-          props.onLoad && props.onLoad()
-          resolve(selector(props)(store.getState()))
-          setTimeout(() => fbUnsyncItem(props), 10 * 1000)
+    syncItem(
+      {
+        ...props,
+        onValue: item => {
+          if (firstRead) {
+            firstRead = false
+            resolve(item)
+            triggerOnValue(item, props, store, selector)
+            setTimeout(() => fbUnsyncItem(props), 10 * 1000)
+          }
         }
-      }
-    })
+      },
+      store,
+      selector
+    )
   })
 }
 
@@ -159,40 +174,38 @@ function fetchItem(props, store, selector) {
  */
 
 function syncList(props, store, selector) {
-  /**
-   * fbSyncList returns true if the listener is already active.
-   */
+  // used for forcing `onValue` calls
+  // when dealing with cached listeners
+  let loaded = false
 
-  let innerState = {
-    loaded: fbSyncList({
-      ...props,
-      onSnapAdded: snap => onSnap(snap, props, store, innerState, true),
-      onSnapChanged: snap => onSnap(snap, props, store, innerState, true),
-      onSnapRemoved: snap => onSnap(snap, props, store, innerState, true, true)
-    })
-  }
-
-  /**
-   * If already active, trigger onLoad event.
-   */
-
-  if (innerState.loaded) {
-    props.onLoad && props.onLoad()
-    return
-  }
-
-  /**
-   * If not trigger the onLoad callback manually after a big timeout.
-   * This is necessary because list events does not automatically trigger on empty lists,
-   *
-   */
-
-  setTimeout(() => {
-    if (!innerState.loaded) {
-      props.onLoad && props.onLoad()
-      innerState.loaded = true
+  fbSyncList({
+    ...props,
+    onError: () => (loaded = true),
+    onSnapChanged: snap => onSnap(snap, props, store, selector, true),
+    onSnapRemoved: snap => onSnap(snap, props, store, selector, true, true),
+    onSnapAdded: snap => {
+      loaded = true
+      onSnap(snap, props, store, selector, true)
     }
-  }, 2000)
+  })
+
+  // if query is not fetched in threshold time,
+  // manually call `onValue` with local item
+  // as this probably mean the query is cached
+  setTimeout(() => {
+    if (!loaded && props.onValue) {
+      loaded = true
+      const localList = selector(props)(store.getState())
+
+      if (localList) {
+        localList.forEach(localItem =>
+          triggerOnValue(localItem, props, localItem)
+        )
+      } else {
+        triggerOnValue(null, props, null)
+      }
+    }
+  }, QUERY_TIMEOUT)
 }
 
 function unsyncList(props) {

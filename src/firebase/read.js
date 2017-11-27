@@ -87,14 +87,14 @@ function getPathRef(props) {
   return ref
 }
 
-export function fbSyncItem(props, onError) {
+export function fbSyncItem(props) {
   return cacheAdd(props, () =>
-    getPathRef(props).on('value', props.onSnap, onError)
+    getPathRef(props).on('value', props.onSnap, props.onError)
   )
 }
 
-export function fbUnsyncItem(props, onError) {
-  cacheRemove(props, off => getPathRef(props).off('value', off, onError))
+export function fbUnsyncItem(props) {
+  cacheRemove(props, off => getPathRef(props).off('value', off, props.onError))
 }
 
 export function fbSyncList(props) {
@@ -102,9 +102,9 @@ export function fbSyncList(props) {
   return cacheAdd(props, () => {
     const ref = getPathRef(props)
     return {
-      added: ref.on('child_added', props.onSnapAdded),
-      changed: ref.on('child_changed', props.onSnapChanged),
-      removed: ref.on('child_removed', props.onSnapRemoved)
+      added: ref.on('child_added', props.onSnapAdded, props.onError),
+      changed: ref.on('child_changed', props.onSnapChanged, props.onError),
+      removed: ref.on('child_removed', props.onSnapRemoved, props.onError)
     }
   })
 }
