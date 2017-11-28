@@ -38,7 +38,7 @@ function parseItem(snap, props) {
 }
 
 function parseOnValueItem(item) {
-  return item === 'object' && item.toJS ? item.toJS() : item
+  return typeof item === 'object' && item.toJS ? item.toJS() : item
 }
 
 function triggerOnValue(item, props, storeOrPrevItem, selector) {
