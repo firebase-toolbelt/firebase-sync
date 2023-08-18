@@ -1,3 +1,8 @@
+> ⚠️ **Important** ⚠️
+> This repository is not actively maintained so feel free to fork it and improve it. I've not been using Firebase for years - so I'm not motivated to continue maintaining libraries around it.
+
+---
+
 <a align="center" href="https://github.com/firebase-toolbelt/firebase-toolbelt"><img width="100%" src="https://i.imgur.com/cNLtxzM.png" alt="Firebase Sync" border="0" /></a>
 
 > Bind your firebase backend to your redux state with a dead simple component based approach.
